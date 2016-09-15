@@ -10,19 +10,26 @@ import numpy as np
 
 # print(sigmoid(w.dot(x)))
 
+class Layer(object):
+    """docstring for Layer"""
+    def __init__(self, arg):
+        self.arg = arg
+
+
+
 class Nueron:
     """docstring for Nueron"""
     def __init__(self,bias,numInputs):
+        self.weights = []
         self.bias = bias
-        self.weights = np.append(self.randomWeights(numInputs),bias)
+
 
     def sigmoid(self,x):
         print(x)
         return 1 / (1 + np.exp(-x))
 
-    def output(self,x):
-        x = np.append(x,1)
-        print(self.weights)
+    def getOutput(self,input):
+        input = np.append(input,1)
         return (self.sigmoid(x.dot(self.weights)))
 
     def randomWeights(self,num):
