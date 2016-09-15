@@ -19,12 +19,22 @@ class NueralNet():
         self.hiddenLayer = Layer(numHidden, hBias)
         self.outputLayer = Layer(numOutputs, outputBias)
 
+        self.setInputToHiddenWeights(hWeights)
+        self.setHiddenToOutput(outWeights)
+
+    def setInputToHiddenWeights(hWeights):
+
+        for neuron in self.hiddenLayer.nuerons:
+            if hWeights:
+                nueron.weights = hWeights
+            else:
+                nueron.weights = np.random.rand(self.numInputs)
 
 
 
 
 
-class Layer(object):
+class Layer():
     """docstring for Layer"""
     def __init__(self, numNuerons, bias = None):
         self.bais = bias or 1
