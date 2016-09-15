@@ -10,6 +10,20 @@ import numpy as np
 
 # print(sigmoid(w.dot(x)))
 
+
+class NueralNet():
+    """docstring for NueralNet"""
+    def __init__(self,learningRate,numInputs,numHidden,numOutputs,hWeights = None, hBias = None,outBias = None, outWeights = None, ):
+        self.learningRate = learningRate or 1
+        self.numInputs = numInputs
+        self.hiddenLayer = Layer(numHidden, hBias)
+        self.outputLayer = Layer(numOutputs, outputBias)
+
+
+
+
+
+
 class Layer(object):
     """docstring for Layer"""
     def __init__(self, numNuerons, bias = None):
