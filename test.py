@@ -19,6 +19,11 @@ class Layer(object):
         for i in range(numNuerons):
             nuerons.append(Nueron(self.bias))
 
+    def retreiveOutputs(self):
+        outputs = []
+        for nueron in self.nuerons:
+            outputs.append(nueron.output)
+        return outputs
 
 
 class Nueron:
