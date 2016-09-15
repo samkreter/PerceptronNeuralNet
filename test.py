@@ -12,14 +12,18 @@ import numpy as np
 
 class Layer(object):
     """docstring for Layer"""
-    def __init__(self, arg):
-        self.arg = arg
+    def __init__(self, numNuerons, bias = None):
+        self.bais = bias or 1
+        self.nuerons = []
+
+        for i in range(numNuerons):
+            nuerons.append(Nueron(self.bias))
 
 
 
 class Nueron:
     """docstring for Nueron"""
-    def __init__(self,bias,numInputs):
+    def __init__(self,bias):
         self.weights = []
         self.bias = bias
 
