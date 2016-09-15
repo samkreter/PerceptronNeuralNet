@@ -30,6 +30,14 @@ class NueralNet():
             else:
                 nueron.weights = np.random.rand(self.numInputs)
 
+    def setHiddenToOutput(outWeights):
+
+        for nueron in self.outputLayer:
+
+            if outWeights:
+                nueron.weights = outWeights
+            else:
+                nueron.weight = np.random.rand(len(self.hiddenLayer.nuerons))
 
 
 
