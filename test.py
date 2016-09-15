@@ -30,7 +30,11 @@ class Nueron:
 
     def getOutput(self,input):
         input = np.append(input,1)
-        return (self.sigmoid(x.dot(self.weights)))
+        self.output = self.sigmoid(x.dot(self.weights))
+        return self.output
+
+    def calcError(self,labels):
+        return 0.5 * (label - self.output) ** 2
 
     def randomWeights(self,num):
         return np.random.uniform(low=0.5, high=13.3, size=(num))
