@@ -51,10 +51,13 @@ class Layer():
         for i in range(numNuerons):
             nuerons.append(Nueron(self.bias))
 
-    def retreiveOutputs(self):
+    def computeOutputs(self,input):
         outputs = []
+
         for nueron in self.nuerons:
-            outputs.append(nueron.output)
+
+            outputs.append(nueron.getOutput(input))
+
         return outputs
 
 
