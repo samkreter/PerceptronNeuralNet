@@ -80,6 +80,12 @@ class Nueron:
     def randomWeights(self,num):
         return np.random.uniform(low=0.5, high=13.3, size=(num))
 
+    def activationFunDeriv(self):
+        return self.output * (1 - self.output)
+
+    def calcChange(self, targetOutput):
+        return -(targetOutput - self.output) * self.calculate_pd_total_net_input_wrt_input();
+
 
 
 
