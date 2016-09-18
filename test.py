@@ -22,6 +22,42 @@ class NueralNet():
         self.setInputToHiddenWeights(hWeights)
         self.setHiddenToOutput(outWeights)
 
+
+    def train(self,inputs, labels):
+        self.fullForwardPass(ipnuts);
+
+        #Get output layer gradients
+        outputGrad = [0] * len(self.outputLayer.neurons)
+        for i in range(len(self.outputLayer.neurons)):
+            outputGrad[i] = self.outputLayer.neurons[i].calcGrad(labels[i])
+
+        #Get hidden layer gradients
+        hiddenGrad = [0] * len(self.hiddenLayer.neurons)
+        for i in range(len(self.hiddenLayer.neurons)):
+            dErrorHiddenNeuronOutput = 0
+
+            for j in range(len(self.output_layer.neurons)):
+
+                outputErrorSum += outputGrad[j] * self.outputLayer.neurons[j].weights[i]
+
+            hiddenGrad[i] = outputErrorSum * self.hiddenLayer.neurons[i].activationFunDeriv(inputs)
+
+        #Adjust output layer weights
+        for i in range(len(self.outputLayer.nuerons)):
+            for w in range(len(self.outputLayer.nuerons[i].weights)):
+                self.outputLayer.neurons[i].weights[w] -= self.learningRate * self.outputLayer.neurons[i].getInputAtIndex(i) * outputGrad[i]
+
+        #Adjust hidden layer weights
+        for i in range(len(self.hiddenLayer.nuerons)):
+            for w in range(len(self.hiddenLayer.nuerons[i].weights)):
+                self.hiddenLayer.nuerons[i].weights[w] -= self.learningRate * self.hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i)
+
+
+
+    def fullForwardPass(self, inputs):
+
+        return self.outputLayer.forwardPass(self.hiddenLayer.forwardPass(inputs))
+
     def setInputToHiddenWeights(hWeights):
 
         for neuron in self.hiddenLayer.nuerons:
@@ -29,6 +65,9 @@ class NueralNet():
                 nueron.weights = hWeights
             else:
                 nueron.weights = np.random.rand(self.numInputs)
+
+
+
 
     def setHiddenToOutput(outWeights):
 
@@ -51,7 +90,7 @@ class Layer():
         for i in range(numNuerons):
             nuerons.append(Nueron(self.bias))
 
-    def computeOutputs(self,input):
+    def forwardPass(self,input):
         outputs = []
 
         for nueron in self.nuerons:
@@ -73,8 +112,8 @@ class Nueron:
         return 1 / (1 + np.exp(-x))
 
     def getOutput(self,input):
-        input = np.append(input,1)
-        self.output = self.sigmoid(x.dot(self.weights))
+        self.inputs = np.append(input,1)
+        self.output = self.sigmoid(self.inputs.dot(self.weights))
         return self.output
 
     def calcError(self,labels):
@@ -86,9 +125,10 @@ class Nueron:
     def activationFunDeriv(self):
         return self.output * (1 - self.output)
 
-    def calcChange(self, targetOutput):
+    def calcGrad(self, targetOutput):
         return -(targetOutput - self.output) * self.calculate_pd_total_net_input_wrt_input();
 
-
+    def getInputAtIndex(self,index):
+        return self.inputs[index]
 
 
