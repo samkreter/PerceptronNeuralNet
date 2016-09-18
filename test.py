@@ -13,7 +13,7 @@ import numpy as np
 
 class NueralNet():
     """docstring for NueralNet"""
-    def __init__(self,learningRate,numInputs,numHidden,numOutputs,hWeights = None, hBias = None,outBias = None, outWeights = None, ):
+    def __init__(self,learningRate,numInputs,numHidden,numOutputs,hWeights = None, hBias = None, outputBias = None, outWeights = None):
         self.learningRate = learningRate or 1
         self.numInputs = numInputs
         self.hiddenLayer = Layer(numHidden, hBias)
@@ -24,7 +24,7 @@ class NueralNet():
 
 
     def train(self,inputs, labels):
-        self.fullForwardPass(ipnuts);
+        self.fullForwardPass(inputs);
 
         #Get output layer gradients
         outputGrad = [0] * len(self.outputLayer.neurons)
@@ -58,20 +58,20 @@ class NueralNet():
 
         return self.outputLayer.forwardPass(self.hiddenLayer.forwardPass(inputs))
 
-    def setInputToHiddenWeights(hWeights):
+    def setInputToHiddenWeights(self,hWeights):
 
-        for neuron in self.hiddenLayer.nuerons:
+        for nueron in self.hiddenLayer.nuerons:
             if hWeights:
-                nueron.weights = hWeights
+                nueron.weights = np.append(hWeights,nueron.bias)
             else:
-                nueron.weights = np.random.rand(self.numInputs)
+                nueron.weights = np.append(np.random.rand(self.numInputs),nueron.bias)
 
 
 
 
-    def setHiddenToOutput(outWeights):
+    def setHiddenToOutput(self,outWeights):
 
-        for nueron in self.outputLayer:
+        for nueron in self.outputLayer.nuerons:
 
             if outWeights:
                 nueron.weights = outWeights
@@ -84,11 +84,11 @@ class NueralNet():
 class Layer():
     """docstring for Layer"""
     def __init__(self, numNuerons, bias = None):
-        self.bais = bias or 1
+        self.bias = bias or 1
         self.nuerons = []
 
         for i in range(numNuerons):
-            nuerons.append(Nueron(self.bias))
+            self.nuerons.append(Nueron(self.bias))
 
     def forwardPass(self,input):
         outputs = []
@@ -111,9 +111,16 @@ class Nueron:
         print(x)
         return 1 / (1 + np.exp(-x))
 
-    def getOutput(self,input):
-        self.inputs = np.append(input,1)
-        self.output = self.sigmoid(self.inputs.dot(self.weights))
+    def getOutput(self,inputs):
+        # self.inputs = np.append(input,1)
+        # exit(-1)
+        # self.output = self.sigmoid(self.inputs.dot(self.weights))
+        self.inputs = inputs
+        output = 0
+        for i in range(len(inputs)):
+            output += inputs[i] * self.weights[i]
+
+        self.output = output + self.bias
         return self.output
 
     def calcError(self,labels):
@@ -131,4 +138,11 @@ class Nueron:
     def getInputAtIndex(self,index):
         return self.inputs[index]
 
+#learningRate,numInputs,numHidden,numOutputs
+nn = NueralNet(0.5,2, 2, 2, hWeights=[0.15, 0.2, 0.25, 0.3], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
+for i in range(10000):
+
+    nn.train([0.05, 0.1], [0.01, 0.99])
+
+    print(i, round(nn.calculate_total_error([[[0.05, 0.1], [0.01, 0.99]]]), 9))
