@@ -1,10 +1,6 @@
 import numpy as np
 
 
-
-
-
-
 # x = np.array([0.05,0.1,1])
 # w = np.array([.15,.2,.35])
 
@@ -22,35 +18,47 @@ class NueralNet():
         self.setInputToHiddenWeights(hWeights)
         self.setHiddenToOutput(outWeights)
 
+    def inspect(self):
+        print('------')
+        print('* Inputs: {}'.format(self.numInputs))
+        print('------')
+        print('Hidden Layer')
+        self.hiddenLayer.inspect()
+        print('------')
+        print('* Output Layer')
+        self.outputLayer.inspect()
+        print('------')
+
 
     def train(self,inputs, labels):
         self.fullForwardPass(inputs);
 
         #Get output layer gradients
-        outputGrad = [0] * len(self.outputLayer.neurons)
-        for i in range(len(self.outputLayer.neurons)):
-            outputGrad[i] = self.outputLayer.neurons[i].calcGrad(labels[i])
+        outputGrad = [0] * len(self.outputLayer.nuerons)
+        for i in range(len(self.outputLayer.nuerons)):
+            outputGrad[i] = self.outputLayer.nuerons[i].calcGrad(labels[i])
 
         #Get hidden layer gradients
-        hiddenGrad = [0] * len(self.hiddenLayer.neurons)
-        for i in range(len(self.hiddenLayer.neurons)):
-            dErrorHiddenNeuronOutput = 0
+        hiddenGrad = [0] * len(self.hiddenLayer.nuerons)
+        for i in range(len(self.hiddenLayer.nuerons)):
 
-            for j in range(len(self.output_layer.neurons)):
+            outputErrorSum = 0
 
-                outputErrorSum += outputGrad[j] * self.outputLayer.neurons[j].weights[i]
+            for j in range(len(self.outputLayer.nuerons)):
 
-            hiddenGrad[i] = outputErrorSum * self.hiddenLayer.neurons[i].activationFunDeriv(inputs)
+                outputErrorSum += outputGrad[j] * self.outputLayer.nuerons[j].weights[i]
+
+            hiddenGrad[i] = outputErrorSum * self.hiddenLayer.nuerons[i].activationFunDeriv()
 
         #Adjust output layer weights
         for i in range(len(self.outputLayer.nuerons)):
             for w in range(len(self.outputLayer.nuerons[i].weights)):
-                self.outputLayer.neurons[i].weights[w] -= self.learningRate * self.outputLayer.neurons[i].getInputAtIndex(i) * outputGrad[i]
+                self.outputLayer.nuerons[i].weights[w] -= self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i]
 
         #Adjust hidden layer weights
         for i in range(len(self.hiddenLayer.nuerons)):
             for w in range(len(self.hiddenLayer.nuerons[i].weights)):
-                self.hiddenLayer.nuerons[i].weights[w] -= self.learningRate * self.hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i)
+                self.hiddenLayer.nuerons[i].weights[w] -= self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i)
 
 
 
@@ -78,6 +86,22 @@ class NueralNet():
             else:
                 nueron.weight = np.random.rand(len(self.hiddenLayer.nuerons))
 
+    def getOverallError(self, trainingData):
+
+        error = 0
+
+        for i in range(len(trainingData)):
+
+            trainingInputs, trainingOutputs = trainingData[i]
+
+            self.fullForwardPass(trainingInputs)
+
+            for j in range(len(trainingOutputs)):
+
+                error += self.outputLayer.nuerons[j].calcError(trainingOutputs[j])
+
+        return error
+
 
 
 
@@ -89,6 +113,18 @@ class Layer():
 
         for i in range(numNuerons):
             self.nuerons.append(Nueron(self.bias))
+
+    def inspect(self):
+        print('Neurons:', len(self.nuerons))
+        for n in range(len(self.nuerons)):
+
+            print(' Neuron', n)
+
+            for w in range(len(self.nuerons[n].weights)):
+
+                print('  Weight:', self.nuerons[n].weights[w])
+
+            print('  Bias:', self.bias)
 
     def forwardPass(self,input):
         outputs = []
@@ -120,10 +156,10 @@ class Nueron:
         for i in range(len(inputs)):
             output += inputs[i] * self.weights[i]
 
-        self.output = output + self.bias
+        self.output = self.sigmoid(output + self.bias)
         return self.output
 
-    def calcError(self,labels):
+    def calcError(self,label):
         return 0.5 * (label - self.output) ** 2
 
     def randomWeights(self,num):
@@ -133,7 +169,7 @@ class Nueron:
         return self.output * (1 - self.output)
 
     def calcGrad(self, targetOutput):
-        return -(targetOutput - self.output) * self.calculate_pd_total_net_input_wrt_input();
+        return -(targetOutput - self.output) * self.activationFunDeriv();
 
     def getInputAtIndex(self,index):
         return self.inputs[index]
@@ -141,8 +177,9 @@ class Nueron:
 #learningRate,numInputs,numHidden,numOutputs
 nn = NueralNet(0.5,2, 2, 2, hWeights=[0.15, 0.2, 0.25, 0.3], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
-for i in range(10000):
+nn.inspect();
+# for i in range(10000):
 
-    nn.train([0.05, 0.1], [0.01, 0.99])
+#     nn.train([0.05, 0.1], [0.01, 0.99])
 
-    print(i, round(nn.calculate_total_error([[[0.05, 0.1], [0.01, 0.99]]]), 9))
+#     print(i, round(nn.getOverallError([[[0.05, 0.1], [0.01, 0.99]]]), 9))
