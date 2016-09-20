@@ -61,10 +61,14 @@ class NueralNet():
                 self.hiddenLayer.nuerons[i].weights[w] -= self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i)
                 # print("hidden: ",self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i))
 
-
+    #MultiSet
     def fullForwardPass(self, inputs):
+        currOutput = self.hiddenLayers[0].forwardPass(inputs)
 
-        return self.outputLayer.forwardPass(self.hiddenLayer.forwardPass(inputs))
+        for i in range(1,self.hiddenLayers):
+            currOutput = self.hiddenLayers[i].forwardPass(currOutput)
+
+        return self.outputLayer.forwardPass(currOutput)
 
     #multiSet
     def setInputToHiddenWeights(self,index,hWeights):
