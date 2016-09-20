@@ -10,14 +10,17 @@ import numpy as np
 class NueralNet():
     """docstring for NueralNet"""
     def __init__(self,learningRate,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = None, hBias = None, outputBias = None, outWeights = None):
+
+        #TODO Complete param check
+
         self.learningRate = learningRate or 1
         self.numInputs = numInputs
-        self.numHiddenNodes = numHiddenNodes
+        self.numHiddenNodes = numHiddenNodes #Array
         self.numHLayers = numHLayers
         self.hiddenLayers = []
         self.outputLayer = Layer(numOutputs, outputBias)
 
-
+        self.setUpHiddenLayers()
         self.setHiddenToOutput(outWeights)
 
 
@@ -63,7 +66,7 @@ class NueralNet():
 
         return self.outputLayer.forwardPass(self.hiddenLayer.forwardPass(inputs))
 
-
+    #multiSet
     def setInputToHiddenWeights(self,index,hWeights):
         if index == 0:
             numInputs = self.numInputs
@@ -76,13 +79,13 @@ class NueralNet():
             else:
                 nueron.weights = np.random.rand(numInputs)
 
-
+    #MultiSet
     def setHiddenToOutput(self,outWeights):
 
         for nueron in self.outputLayer.nuerons:
 
             if outWeights:
-                nueron.weights = outWeights[:self.numInputs]
+                nueron.weights = outWeights[:len(self.hiddenLayers[-1].nuerons)]
             else:
                 nueron.weight = np.random.rand(len(self.hiddenLayer.nuerons))
 
