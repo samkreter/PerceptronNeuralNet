@@ -1,10 +1,8 @@
 import numpy as np
 
 
-# x = np.array([0.05,0.1,1])
-# w = np.array([.15,.2,.35])
+#Todo fix hidden bias to be array
 
-# print(sigmoid(w.dot(x)))
 
 
 class NueralNet():
@@ -19,16 +17,17 @@ class NueralNet():
         self.numHLayers = numHLayers
         self.hiddenLayers = []
         self.outputLayer = Layer(numOutputs, outputBias)
-
-        self.setUpHiddenLayers()
+        self.hBias = hBias
+        self.setUpHiddenLayers(hWeights)
         self.setHiddenToOutput(outWeights)
 
-
-    def setUpHiddenLayers(self):
-        for i in range(self.numLayers):
-            self.hiddenLayers.append(Layer(self.numHiddenNodes[i], hBias))
+    #multiset
+    def setUpHiddenLayers(self,hWeights):
+        for i in range(self.numHLayers):
+            self.hiddenLayers.append(Layer(self.numHiddenNodes[i], self.hBias))
             self.setInputToHiddenWeights(i,hWeights[i])
 
+    #multiSet
     def train(self,inputs, labels):
         self.fullForwardPass(inputs);
 
@@ -39,6 +38,7 @@ class NueralNet():
 
         #####Get hidden layer gradients#####################################
         hiddenGrad = []
+        hiddenGrad.insert(0,[0] * len(self.hiddenLayers[-1].nuerons))
         #output to first hidden
         for i in range(len(self.hiddenLayers[-1].nuerons)):
 
@@ -48,7 +48,7 @@ class NueralNet():
 
                 outputErrorSum += outputGrad[j] * self.outputLayer.nuerons[j].weights[i]
 
-            hiddenGrad.append(outputErrorSum * self.hiddenLayer.nuerons[i].activationFunDeriv())
+            hiddenGrad[0][i] = outputErrorSum * self.hiddenLayers[-1].nuerons[i].activationFunDeriv()
 
 
         #TODO: Check math for counting, way to complicated here
@@ -84,7 +84,7 @@ class NueralNet():
     def fullForwardPass(self, inputs):
         currOutput = self.hiddenLayers[0].forwardPass(inputs)
 
-        for i in range(1,self.hiddenLayers):
+        for i in range(1,self.numHLayers):
             currOutput = self.hiddenLayers[i].forwardPass(currOutput)
 
         return self.outputLayer.forwardPass(currOutput)
@@ -112,6 +112,7 @@ class NueralNet():
             else:
                 nueron.weight = np.random.rand(len(self.hiddenLayer.nuerons))
 
+    #Multiset
     def getOverallError(self, trainingData):
 
         error = 0
@@ -189,8 +190,9 @@ class Nueron:
     def getInputAtIndex(self,index):
         return self.inputs[index]
 
+#learningRate,numInputs,numOutputs,numHLayers,numHiddenNodes,hWeights, hBias, outputBias, outWeights
 #learningRate,numInputs,numHidden,numOutputs
-nn = NueralNet(0.5,2, 2, 2, hWeights=[0.15, 0.2, 0.25, 0.3], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+nn = NueralNet(0.5,2, 2, 1,[2], hWeights=[[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 #nn.inspect();
 for i in range(10000):
