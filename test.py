@@ -26,7 +26,7 @@ class NueralNet():
 
     def setUpHiddenLayers(self):
         for i in range(self.numLayers):
-            self.hiddenLayer.append(Layer(self.numHiddenNodes[i], hBias))
+            self.hiddenLayers.append(Layer(self.numHiddenNodes[i], hBias))
             self.setInputToHiddenWeights(i,hWeights[i])
 
     def train(self,inputs, labels):
@@ -37,9 +37,10 @@ class NueralNet():
         for i in range(len(self.outputLayer.nuerons)):
             outputGrad[i] = self.outputLayer.nuerons[i].calcGrad(labels[i])
 
-        #Get hidden layer gradients
-        hiddenGrad = [0] * len(self.hiddenLayer.nuerons)
-        for i in range(len(self.hiddenLayer.nuerons)):
+        #####Get hidden layer gradients#####################################
+        hiddenGrad = []
+        #output to first hidden
+        for i in range(len(self.hiddenLayers[-1].nuerons)):
 
             outputErrorSum = 0
 
@@ -47,7 +48,23 @@ class NueralNet():
 
                 outputErrorSum += outputGrad[j] * self.outputLayer.nuerons[j].weights[i]
 
-            hiddenGrad[i] = outputErrorSum * self.hiddenLayer.nuerons[i].activationFunDeriv()
+            hiddenGrad.append(outputErrorSum * self.hiddenLayer.nuerons[i].activationFunDeriv())
+
+
+        #TODO: Check math for counting, way to complicated here
+        for i in range(self.numHLayers-2,-1,-1):
+            hiddenGrad.insert(0,[0] * len(self.hiddenLayers[i].nuerons))
+
+            for k in range(len(self.hiddenLayers[i].nuerons)):
+
+                outputErrorSum = 0
+
+                for j in range(len(self.hiddenLayers[i+1].nuerons)):
+
+                    outputErrorSum += hiddenGrad[1][j] * self.hiddenLayers[i+1].nuerons[j].weights[k]
+
+                hiddenGrad[0][k] = outputErrorSum * self.hiddenLayers[i].nuerons[k].activationFunDeriv()
+
 
         #Adjust output layer weights
         for i in range(len(self.outputLayer.nuerons)):
@@ -55,11 +72,13 @@ class NueralNet():
                 # print("output: ",self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i])
                 self.outputLayer.nuerons[i].weights[w] -= self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i]
 
+
         #Adjust hidden layer weights
-        for i in range(len(self.hiddenLayer.nuerons)):
-            for w in range(len(self.hiddenLayer.nuerons[i].weights)):
-                self.hiddenLayer.nuerons[i].weights[w] -= self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i)
-                # print("hidden: ",self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i))
+        for k in range(self.numHLayers):
+            for i in range(len(self.hiddenLayers[k].nuerons)):
+                for w in range(len(self.hiddenLayers[k].nuerons[i].weights)):
+                    self.hiddenLayers[k].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[k][i] * self.hiddenLayers[k].nuerons[i].getInputAtIndex(i)
+                    # print("hidden: ",self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i))
 
     #MultiSet
     def fullForwardPass(self, inputs):
