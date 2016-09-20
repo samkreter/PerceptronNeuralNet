@@ -74,10 +74,18 @@ class NueralNet():
 
 
         #Adjust hidden layer weights
-        for k in range(self.numHLayers):
+        for k in range(self.numHLayers-1,-1,-1):
+            if k == 0:
+                break;
             for i in range(len(self.hiddenLayers[k].nuerons)):
                 for w in range(len(self.hiddenLayers[k].nuerons[i].weights)):
-                    self.hiddenLayers[k].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[k][i] * self.hiddenLayers[k].nuerons[i].getInputAtIndex(i)
+                    self.hiddenLayers[k].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[k][i] * self.hiddenLayers[k].nuerons[i].getInputAtIndex(w)
+
+
+        for i in range(len(self.hiddenLayers[0].nuerons)):
+            for w in range(len(self.hiddenLayers[0].nuerons[i].weights)):
+                self.hiddenLayers[k].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[k][i] * self.hiddenLayers[k].nuerons[i].getInputAtIndex(w)
+
                     # print("hidden: ",self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i))
 
     #MultiSet
@@ -94,7 +102,7 @@ class NueralNet():
         if index == 0:
             numInputs = self.numInputs
         else:
-            numInputs = len(self.hiddenLayer[index-1].nuerons)
+            numInputs = len(self.hiddenLayers[index-1].nuerons)
 
         for nueron in self.hiddenLayers[index].nuerons:
             if hWeights:
@@ -192,7 +200,7 @@ class Nueron:
 
 #learningRate,numInputs,numOutputs,numHLayers,numHiddenNodes,hWeights, hBias, outputBias, outWeights
 #learningRate,numInputs,numHidden,numOutputs
-nn = NueralNet(0.5,2, 2, 1,[2], hWeights=[[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+nn = NueralNet(0.5,2, 2, 2,[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 #nn.inspect();
 for i in range(10000):
