@@ -7,7 +7,7 @@ import numpy as np
 
 class NueralNet():
     """docstring for NueralNet"""
-    def __init__(self,learningRate,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = None, hBias = None, outputBias = None, outWeights = None):
+    def __init__(self,learningRate,activFunc,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = None, hBias = None, outputBias = None, outWeights = None):
 
         #TODO Complete param check
 
@@ -16,15 +16,15 @@ class NueralNet():
         self.numHiddenNodes = numHiddenNodes #Array
         self.numHLayers = numHLayers
         self.hiddenLayers = []
-        self.outputLayer = Layer(numOutputs, outputBias)
+        self.outputLayer = Layer(numOutputs,activFunc,outputBias)
         self.hBias = hBias
-        self.setUpHiddenLayers(hWeights)
+        self.setUpHiddenLayers(hWeights,activFunc)
         self.setHiddenToOutput(outWeights)
 
     #multiset
-    def setUpHiddenLayers(self,hWeights):
+    def setUpHiddenLayers(self,hWeights,activFunc):
         for i in range(self.numHLayers):
-            self.hiddenLayers.append(Layer(self.numHiddenNodes[i], self.hBias))
+            self.hiddenLayers.append(Layer(self.numHiddenNodes[i], activFunc, self.hBias))
             self.setInputToHiddenWeights(i,hWeights[i])
 
     #multiSet
@@ -48,7 +48,7 @@ class NueralNet():
 
                 outputErrorSum += outputGrad[j] * self.outputLayer.nuerons[j].weights[i]
 
-            hiddenGrad[0][i] = outputErrorSum * self.hiddenLayers[-1].nuerons[i].activationFunDeriv()
+            hiddenGrad[0][i] = outputErrorSum * self.hiddenLayers[-1].nuerons[i].activFunc(deriv=True)
 
 
         #TODO: Check math for counting, way to complicated here
@@ -63,7 +63,7 @@ class NueralNet():
 
                     outputErrorSum += hiddenGrad[1][j] * self.hiddenLayers[i+1].nuerons[j].weights[k]
 
-                hiddenGrad[0][k] = outputErrorSum * self.hiddenLayers[i].nuerons[k].activationFunDeriv()
+                hiddenGrad[0][k] = outputErrorSum * self.hiddenLayers[i].nuerons[k].activFunc(deriv=True)
 
 
         #Adjust output layer weights
@@ -142,12 +142,12 @@ class NueralNet():
 
 class Layer():
     """docstring for Layer"""
-    def __init__(self, numNuerons, bias = None):
+    def __init__(self, numNuerons,activFunc ,bias = None):
         self.bias = bias or 1
         self.nuerons = []
 
         for i in range(numNuerons):
-            self.nuerons.append(Nueron(self.bias))
+            self.nuerons.append(Nueron(self.bias,activFunc))
 
 
 
@@ -163,13 +163,14 @@ class Layer():
 
 class Nueron:
     """docstring for Nueron"""
-    def __init__(self,bias):
+
+
+    def __init__(self,bias,activationFunc):
         self.weights = []
         self.bias = bias
+        self.activFunc = ActivationFuncs(self).getFunc(activationFunc)
 
 
-    def sigmoid(self,x):
-        return 1 / (1 + np.exp(-x))
 
     def getOutput(self,inputs):
         # self.inputs = np.append(input,1)
@@ -180,7 +181,7 @@ class Nueron:
         for i in range(len(inputs)):
             output += inputs[i] * self.weights[i]
 
-        self.output = self.sigmoid(output + self.bias)
+        self.output = self.activFunc(output + self.bias)
         return self.output
 
     def calcError(self,label):
@@ -189,18 +190,30 @@ class Nueron:
     def randomWeights(self,num):
         return np.random.uniform(low=0.5, high=13.3, size=(num))
 
-    def activationFunDeriv(self):
-        return self.output * (1 - self.output)
-
     def calcGrad(self, targetOutput):
-        return -(targetOutput - self.output) * self.activationFunDeriv();
+        return -(targetOutput - self.output) * self.activFunc(deriv=True);
 
     def getInputAtIndex(self,index):
         return self.inputs[index]
 
+
+class ActivationFuncs():
+    def __init__(self,nueron):
+        self.nueron = nueron
+
+    def getFunc(self,activFunc):
+        return getattr(self,activFunc)
+
+    def sigmoid(self,x=0,deriv=False):
+        if deriv:
+            return self.nueron.output * (1 - self.nueron.output)
+        else:
+            return 1 / (1 + np.exp(-x))
+
+
 #learningRate,numInputs,numOutputs,numHLayers,numHiddenNodes,hWeights, hBias, outputBias, outWeights
 #learningRate,numInputs,numHidden,numOutputs
-nn = NueralNet(0.5,2, 2, 2,[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+nn = NueralNet(learningRate=0.5,activFunc='sigmoid',numInputs=2,numOutputs=2,numHLayers=2,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 #nn.inspect();
 for i in range(10000):
