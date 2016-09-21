@@ -70,8 +70,9 @@ class NueralNet():
         for i in range(len(self.outputLayer.nuerons)):
             for w in range(len(self.outputLayer.nuerons[i].weights)):
                 # print("output: ",self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i])
-                self.outputLayer.nuerons[i].weights[w] -= self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i]
 
+                self.outputLayer.nuerons[i].weights[w] -= self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i]
+            self.outputLayer.nuerons[i].bias -= outputGrad[i] * self.learningRate
 
         #Adjust hidden layer weights
         for k in range(self.numHLayers-1,-1,-1):
@@ -80,13 +81,13 @@ class NueralNet():
             for i in range(len(self.hiddenLayers[k].nuerons)):
                 for w in range(len(self.hiddenLayers[k].nuerons[i].weights)):
                     self.hiddenLayers[k].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[k][i] * self.hiddenLayers[k].nuerons[i].getInputAtIndex(w)
-
+                self.hiddenLayers[k].nuerons[i].bias -= self.learningRate * hiddenGrad[k][i]
 
         for i in range(len(self.hiddenLayers[0].nuerons)):
             for w in range(len(self.hiddenLayers[0].nuerons[i].weights)):
-                self.hiddenLayers[k].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[k][i] * self.hiddenLayers[k].nuerons[i].getInputAtIndex(w)
-
-                    # print("hidden: ",self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i))
+                self.hiddenLayers[0].nuerons[i].weights[w] -= self.learningRate * hiddenGrad[0][i] * self.hiddenLayers[0].nuerons[i].getInputAtIndex(w)
+            self.hiddenLayers[0].nuerons[i].bias -= self.learningRate * hiddenGrad[0][i]
+            # print("hidden: ",self.learningRate * hiddenGrad[i] * self.hiddenLayer.nuerons[i].getInputAtIndex(i))
 
     #MultiSet
     def fullForwardPass(self, inputs):
@@ -137,6 +138,27 @@ class NueralNet():
 
         return error
 
+    def inspect(self):
+
+        print('------')
+
+        print('* Inputs: {}'.format(self.numInputs))
+
+        print('------')
+
+        print('Hidden Layer')
+
+        for i in range(len(self.hiddenLayers)):
+            self.hiddenLayers[i].inspect()
+
+        print('------')
+
+        print('* Output Layer')
+
+        self.outputLayer.inspect()
+
+        print('------')
+
     def predict (self,inputData):
         self.fullForwardPass(inputData)
         return self.outputLayer.outputs
@@ -153,7 +175,19 @@ class Layer():
         for i in range(numNuerons):
             self.nuerons.append(Nueron(self.bias,activFunc))
 
+    def inspect(self):
 
+        print('Neurons:', len(self.nuerons))
+
+        for n in range(len(self.nuerons)):
+
+            print(' Neuron', n)
+
+            for w in range(len(self.nuerons[n].weights)):
+
+                print('  Weight:', self.nuerons[n].weights[w])
+
+            print('  Bias:', self.bias)
 
     def forwardPass(self,input):
         outputs = []
