@@ -7,7 +7,7 @@ import numpy as np
 
 class NueralNet():
     """docstring for NueralNet"""
-    def __init__(self,learningRate,activFunc,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = None, hBias = None, outputBias = None, outWeights = None):
+    def __init__(self,learningRate,activFunc,outputActivFunc,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = None, hBias = None, outputBias = None, outWeights = None):
 
         #TODO Complete param check
 
@@ -16,7 +16,7 @@ class NueralNet():
         self.numHiddenNodes = numHiddenNodes #Array
         self.numHLayers = numHLayers
         self.hiddenLayers = []
-        self.outputLayer = Layer(numOutputs,activFunc,outputBias)
+        self.outputLayer = Layer(numOutputs,outputActivFunc,outputBias)
         self.hBias = hBias
         self.setUpHiddenLayers(hWeights,activFunc)
         self.setHiddenToOutput(outWeights)
@@ -137,6 +137,10 @@ class NueralNet():
 
         return error
 
+    def predict (self,inputData):
+        self.fullForwardPass(inputData)
+        return self.outputLayer.outputs
+
 
 
 
@@ -157,7 +161,7 @@ class Layer():
         for nueron in self.nuerons:
 
             outputs.append(nueron.getOutput(input))
-
+        self.outputs = outputs
         return outputs
 
 
@@ -210,14 +214,22 @@ class ActivationFuncs():
         else:
             return 1 / (1 + np.exp(-x))
 
+    def tanh(self,x=0,deriv=False):
+        if deriv:
+            return 1 - self.nueron.output ** 2
+        else:
+            return (np.exp(x) - np.exp(-x))/(np.exp(x) + np.exp(-x))
 
-#learningRate,numInputs,numOutputs,numHLayers,numHiddenNodes,hWeights, hBias, outputBias, outWeights
-#learningRate,numInputs,numHidden,numOutputs
-nn = NueralNet(learningRate=0.5,activFunc='sigmoid',numInputs=2,numOutputs=2,numHLayers=2,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+    def linear(self,x=0,deriv=False):
+        if deriv:
+            return 1
+        else:
+            return x
 
-#nn.inspect();
-for i in range(10000):
 
-    nn.train([0.05, 0.1], [0.01, 0.99])
 
-    print(i, round(nn.getOverallError([[[0.05, 0.1], [0.01, 0.99]]]), 9))
+
+
+
+
+
