@@ -30,26 +30,35 @@ def getError(errors):
 ######################Three clouds testing###########################
 
 #Load data
-# threeClouds = np.loadtxt(open("threeclouds.data","rb"),delimiter=",")
-# cloudData = threeClouds[:,1:]
-# cloudData = preprocessing.scale(threeClouds[:,1:])
-# X_train, X_test, labels_train, labels_test = cross_validation.train_test_split(cloudData,threeClouds[:,0], test_size=.4,random_state=0)
+threeClouds = np.loadtxt(open("threeclouds.data","rb"),delimiter=",")
+cloudData = threeClouds[:,1:]
+#cloudData = preprocessing.scale(threeClouds[:,1:])
+X_train, X_test, labels_train, labels_test = cross_validation.train_test_split(cloudData,threeClouds[:,0], test_size=.4,random_state=0)
 
-# nn = net.NueralNet(learningRate=.5,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=2,numOutputs=3,numHLayers=1,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.5, outputBias=0.5, outWeights=[0.4, 0.45, 0.5, 0.55])
+lrs = [.5,5,10]
+afuncs = ['sigmoid','tanh','linear']
+nhnodes = [1,2,5,10]
+numLayers = [1,2,3]
+
+lrsData = []
 
 
+for it in range(10):
+    nn = net.NueralNet(learningRate=1,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=2,numOutputs=3,numHLayers=1,numHiddenNodes=[3,3,3,3,3,3], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+    for i in range(200):
+        srange = list(range(len(X_train)))
+        np.random.shuffle(srange)
+        for j in srange:
+            nn.train(X_train[j], convertLabel(labels_train[j]))
+        errors = []
+        trange = list(range(len(X_test)))
+        np.random.shuffle(trange)
+        for k in trange:
+            errors.append([labels_test[k],np.argmax(nn.predict(X_test[k]))+1])
+        lrsData.append([0,i,getError(errors)])
+    print(it)
 
-# for i in range(500):
-#     srange = list(range(len(X_train)))
-#     np.random.shuffle(srange)
-#     for j in srange:
-#         nn.train(X_train[j], convertLabel(labels_train[j]))
-#     errors = []
-#     trange = list(range(len(X_test)))
-#     np.random.shuffle(trange)
-#     for k in trange:
-#         errors.append([labels_test[k],np.argmax(nn.predict(X_test[k]))+1])
-#     print(i,getError(errors))
+np.savetxt("nonProcCloudData.csv", np.array(lrsData), delimiter=",")
 
     # print(errors[0])
     # print(i,threeClouds[index][0],nn.predict(threeClouds[index][1:]))
@@ -59,29 +68,37 @@ def getError(errors):
 
 ####Wine Data##################################################################################
 
-# #Load data
-wines = np.loadtxt(open("wine.data","rb"),delimiter=",")
-labels = wines[:,:1]
-wdata = preprocessing.scale(wines[:,1:])
-#wdata = wines[:,1:]
-X_train, X_test, labels_train, labels_test = cross_validation.train_test_split(wdata,labels, test_size=.4,random_state=0)
+# # #Load data
+# wines = np.loadtxt(open("wine.data","rb"),delimiter=",")
+# labels = wines[:,:1]
+# #wdata = preprocessing.scale(wines[:,1:])
+# wdata = wines[:,1:]
+# X_train, X_test, labels_train, labels_test = cross_validation.train_test_split(wdata,labels, test_size=.4,random_state=0)
+
+# lrs = [.5,5,10]
+# afuncs = ['sigmoid','tanh','linear']
+# nhnodes = [1,2,5,10]
+# numLayers = [1,2,3]
+
+# lrsData = []
+
+# for it in range(10):
+#     nn = net.NueralNet(learningRate=1,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=13,numOutputs=3,numHLayers=1,numHiddenNodes=[3,3,3,3,3,3], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5])
 
 
+#     for i in range(200):
+#         for j in range(len(X_train)):
+#             nn.train(X_train[j], convertLabel(labels_train[j]))
 
-nn = net.NueralNet(learningRate=2,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=13,numOutputs=3,numHLayers=1,numHiddenNodes=[12], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+#         errors = []
+#         trange = list(range(len(X_test)))
+#         np.random.shuffle(trange)
+#         for k in trange:
+#             errors.append([labels_test[k],np.argmax(nn.predict(X_test[k]))+1])
+#         lrsData.append([1,i,getError(errors)])
+#     print(it)
 
-
-for i in range(250):
-    for j in range(len(X_train)):
-        nn.train(X_train[j], convertLabel(labels_train[j]))
-
-    errors = []
-    trange = list(range(len(X_test)))
-    np.random.shuffle(trange)
-    for k in trange:
-        errors.append([labels_test[k],np.argmax(nn.predict(X_test[k]))+1])
-    print(i,getError(errors))
-
+# np.savetxt("nonProcWineData.csv", np.array(lrsData), delimiter=",")
 
     #print(i, round(nn.getOverallError([[threeClouds[index][1:], convertLabel(threeClouds[index][0])]]), 9))
 ##########################################################################
