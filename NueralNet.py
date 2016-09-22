@@ -7,7 +7,7 @@ import numpy as np
 
 class NueralNet():
     """docstring for NueralNet"""
-    def __init__(self,learningRate,activFunc,outputActivFunc,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = None, hBias = None, outputBias = None, outWeights = None):
+    def __init__(self,learningRate,activFunc,outputActivFunc,numInputs,numOutputs,numHLayers,numHiddenNodes = None,hWeights = [], hBias = None, outputBias = None, outWeights = []):
 
         #TODO Complete param check
 
@@ -25,7 +25,10 @@ class NueralNet():
     def setUpHiddenLayers(self,hWeights,activFunc):
         for i in range(self.numHLayers):
             self.hiddenLayers.append(Layer(self.numHiddenNodes[i], activFunc, self.hBias))
-            self.setInputToHiddenWeights(i,hWeights[i])
+            if i < len(hWeights):
+                self.setInputToHiddenWeights(i,hWeights[i])
+            else:
+                self.setInputToHiddenWeights(i,[])
 
     #multiSet
     def train(self,inputs, labels):
@@ -106,7 +109,7 @@ class NueralNet():
             numInputs = len(self.hiddenLayers[index-1].nuerons)
 
         for nueron in self.hiddenLayers[index].nuerons:
-            if hWeights:
+            if hWeights and len(hWeights) >= numInputs:
                 nueron.weights = hWeights[:numInputs]
             else:
                 nueron.weights = np.random.rand(numInputs)
@@ -116,7 +119,7 @@ class NueralNet():
 
         for nueron in self.outputLayer.nuerons:
 
-            if outWeights:
+            if outWeights and len(outWeights) >= len(self.outputLayer.nuerons):
                 nueron.weights = outWeights[:len(self.hiddenLayers[-1].nuerons)]
             else:
                 nueron.weight = np.random.rand(len(self.hiddenLayer.nuerons))
