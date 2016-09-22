@@ -1,5 +1,7 @@
 import numpy as np
 import NueralNet as net
+from sklearn import preprocessing
+import matplotlib.pyplot as plt
 
 
 
@@ -27,15 +29,16 @@ def getError(errors):
 
 
 
-# #Three clouds testing###########################
+######################Three clouds testing###########################
 
 # #Load data
-# threeClouds = np.loadtxt(open("threeclouds.data","rb"),delimiter=",")
+#threeClouds = np.loadtxt(open("threeclouds.data","rb"),delimiter=",")
 
 # nn = net.NueralNet(learningRate=10,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=2,numOutputs=3,numHLayers=2,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.5, outputBias=0.5, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 
-
+# plt.plot(threeClouds[:,1],threeClouds[:,2])
+# plt.show()
 
 
 
@@ -56,35 +59,80 @@ def getError(errors):
     #print(i,threeClouds[index][0],nn.predict(threeClouds[index][1:]))
     #print(i, round(nn.getOverallError([[threeClouds[index][1:], convertLabel(threeClouds[index][0])]]), 9))
 
+###########################################################################
 
-####Wine Data########################
+####Wine Data##################################################################################
 
 #Load data
-wines = np.loadtxt(open("wine.data","rb"),delimiter=",")
+# wines = np.loadtxt(open("wine.data","rb"),delimiter=",")
+# labels = wines[:,:1]
+# wdata = preprocessing.scale(wines[:,1:])
 
-nn = net.NueralNet(learningRate=10,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=13,numOutputs=3,numHLayers=1,numHiddenNodes=[4,4], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+
+# nn = net.NueralNet(learningRate=20,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=13,numOutputs=3,numHLayers=1,numHiddenNodes=[4,4], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+
+
+# #index = 130
+# for i in range(50):
+#     index = int(input())
+#     nn.train(wdata[index],convertLabel(labels[index]))
+#     print(labels[index],nn.predict(wdata[index]))
 
 
     #print(getError(errors))
 
-for i in range(50):
-    for j in range(len(wines)):
-        nn.train(wines[j][1:], convertLabel(wines[j][0]))
+# for i in range(50):
+#     for j in range(len(wines)):
+#         nn.train(wdata[j], convertLabel(labels[j]))
 
-    errors = []
-    trange = list(range(len(wines)))
-    np.random.shuffle(trange)
-    for i in trange:
-        errors.append([wines[i][0],np.argmax(nn.predict(wines[i][1:]))+1])
-    print(getError(errors))
+#     errors = []
+#     trange = list(range(len(wines)))
+#     np.random.shuffle(trange)
+#     for i in trange:
+#         errors.append([labels[i],np.argmax(nn.predict(wdata[i]))+1])
+#     print(getError(errors))
 
 
     #print(i, round(nn.getOverallError([[threeClouds[index][1:], convertLabel(threeClouds[index][0])]]), 9))
+##########################################################################
+
+#############semeion Data ####################################
+
+
+#Load data
+# semeion = np.genfromtxt("semeion.data",delimiter=",")
+# labels = semeion[:,-10:]
+# sdata = semeion[:,:-10]
+# wdata = preprocessing.scale(wines[:,1:])
+
+
+# nn = net.NueralNet(learningRate=20,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=256,numOutputs=10,numHLayers=1,numHiddenNodes=[4,4], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+
+
+# #index = 130
+# for i in range(50):
+#     index = int(input())
+#     nn.train(wdata[index],convertLabel(labels[index]))
+#     print(labels[index],nn.predict(wdata[index]))
+
+
+    #print(getError(errors))
+
+# for i in range(50):
+#     for j in range(len(wines)):
+#         nn.train(wdata[j], convertLabel(labels[j]))
+
+#     errors = []
+#     trange = list(range(len(wines)))
+#     np.random.shuffle(trange)
+#     for i in trange:
+#         errors.append([labels[i],np.argmax(nn.predict(wdata[i]))+1])
+#     print(getError(errors))
+#######################################################################
 
 
 
-
-#First round testing
+###############First round testing#######################################
 # nn = net.NueralNet(learningRate=0.5,activFunc='tanh',numInputs=2,numOutputs=2,numHLayers=2,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 # #nn.inspect();
@@ -93,3 +141,4 @@ for i in range(50):
 #     nn.train([0.05, 0.1], [0.01, 0.99])
 
 #     print(i, round(nn.getOverallError([[[0.05, 0.1], [0.01, 0.99]]]), 9))
+############################################################################
