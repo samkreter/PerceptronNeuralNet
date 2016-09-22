@@ -118,7 +118,7 @@ class NueralNet():
 
         for nueron in self.outputLayer.nuerons:
 
-            if outWeights and len(outWeights) >= len(self.outputLayer.nuerons):
+            if outWeights and len(outWeights) >= len(self.hiddenLayers[-1].nuerons):
                 nueron.weights = outWeights[:len(self.hiddenLayers[-1].nuerons)]
             else:
                 nueron.weights = np.random.rand(len(self.hiddenLayers[-1].nuerons))
