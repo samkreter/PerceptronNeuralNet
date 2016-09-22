@@ -67,7 +67,8 @@ wdata = preprocessing.scale(wines[:,1:])
 X_train, X_test, labels_train, labels_test = cross_validation.train_test_split(wdata,labels, test_size=.4,random_state=0)
 
 
-nn = net.NueralNet(learningRate=10,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=13,numOutputs=3,numHLayers=1,numHiddenNodes=[5], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+
+nn = net.NueralNet(learningRate=2,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=13,numOutputs=3,numHLayers=1,numHiddenNodes=[12], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 
 for i in range(250):
