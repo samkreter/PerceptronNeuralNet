@@ -22,8 +22,6 @@ def getError(errors):
     for i in range(length):
         if errors[i][0] != errors[i][1]:
             errorSum += 1
-            errorList[int(errors[i][0])-1] += 1
-    print(np.argmax(errorList)+1)
     return errorSum / length
 
 
@@ -31,10 +29,10 @@ def getError(errors):
 
 ######################Three clouds testing###########################
 
-# #Load data
-#threeClouds = np.loadtxt(open("threeclouds.data","rb"),delimiter=",")
+#Load data
+threeClouds = np.loadtxt(open("threeclouds.data","rb"),delimiter=",")
 
-# nn = net.NueralNet(learningRate=10,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=2,numOutputs=3,numHLayers=2,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.5, outputBias=0.5, outWeights=[0.4, 0.45, 0.5, 0.55])
+nn = net.NueralNet(learningRate=20,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=2,numOutputs=3,numHLayers=2,numHiddenNodes=[2,3], hWeights=[[0.15, 0.2, 0.25, 0.3],[0.15, 0.2, 0.25, 0.3]], hBias=0.5, outputBias=0.5, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 
 # plt.plot(threeClouds[:,1],threeClouds[:,2])
@@ -43,18 +41,18 @@ def getError(errors):
 
 
 
-# for i in range(500):
-#     srange = list(range(len(threeClouds)))
-#     np.random.shuffle(srange)
-#     for j in srange:
-#         nn.train(threeClouds[j][1:], convertLabel(threeClouds[j][0]))
-#     errors = []
-#     trange = list(range(len(threeClouds)))
-#     np.random.shuffle(trange)
-#     for i in trange:
-#         errors.append([threeClouds[i][0],np.argmax(nn.predict(threeClouds[i][1:]))+1])
-#     print(getError(errors))
-    #input()
+for i in range(500):
+    srange = list(range(len(threeClouds)))
+    np.random.shuffle(srange)
+    for j in srange:
+        nn.train(threeClouds[j][1:], convertLabel(threeClouds[j][0]))
+    errors = []
+    trange = list(range(len(threeClouds)))
+    np.random.shuffle(trange)
+    for k in trange:
+        errors.append([threeClouds[k][0],np.argmax(nn.predict(threeClouds[k][1:]))+1])
+    print(i,getError(errors))
+
     #print(errors[0])
     #print(i,threeClouds[index][0],nn.predict(threeClouds[index][1:]))
     #print(i, round(nn.getOverallError([[threeClouds[index][1:], convertLabel(threeClouds[index][0])]]), 9))
@@ -100,23 +98,23 @@ def getError(errors):
 
 
 #Load data
-# semeion = np.genfromtxt("semeion.data",delimiter=",")
+# semeion = np.genfromtxt("semeion.data")
 # labels = semeion[:,-10:]
 # sdata = semeion[:,:-10]
-# wdata = preprocessing.scale(wines[:,1:])
+# #wdata = preprocessing.scale(wines[:,1:])
 
 
-# nn = net.NueralNet(learningRate=20,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=256,numOutputs=10,numHLayers=1,numHiddenNodes=[4,4], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
+# nn = net.NueralNet(learningRate=10,activFunc='sigmoid',outputActivFunc='sigmoid',numInputs=256,numOutputs=10,numHLayers=1,numHiddenNodes=[4], hBias=0.35, outputBias=0.6, outWeights=[0.4, 0.45, 0.5, 0.55])
 
 
 # #index = 130
 # for i in range(50):
 #     index = int(input())
-#     nn.train(wdata[index],convertLabel(labels[index]))
-#     print(labels[index],nn.predict(wdata[index]))
+#     nn.train(sdata[index],labels[index])
+#     print(np.argmax(labels[index])+1,np.argmax(nn.predict(sdata[index]))+1)
 
 
-    #print(getError(errors))
+#     print(getError(errors))
 
 # for i in range(50):
 #     for j in range(len(wines)):

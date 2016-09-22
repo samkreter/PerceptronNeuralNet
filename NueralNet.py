@@ -74,7 +74,7 @@ class NueralNet():
             for w in range(len(self.outputLayer.nuerons[i].weights)):
                 # print("output: ",self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i])
 
-                self.outputLayer.nuerons[i].weights[w] -= self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(i) * outputGrad[i]
+                self.outputLayer.nuerons[i].weights[w] -= self.learningRate * self.outputLayer.nuerons[i].getInputAtIndex(w) * outputGrad[i]
             self.outputLayer.nuerons[i].bias -= outputGrad[i] * self.learningRate
 
         #Adjust hidden layer weights
@@ -98,7 +98,6 @@ class NueralNet():
 
         for i in range(1,self.numHLayers):
             currOutput = self.hiddenLayers[i].forwardPass(currOutput)
-
         return self.outputLayer.forwardPass(currOutput)
 
     #multiSet
@@ -122,7 +121,7 @@ class NueralNet():
             if outWeights and len(outWeights) >= len(self.outputLayer.nuerons):
                 nueron.weights = outWeights[:len(self.hiddenLayers[-1].nuerons)]
             else:
-                nueron.weight = np.random.rand(len(self.hiddenLayer.nuerons))
+                nueron.weights = np.random.rand(len(self.hiddenLayers[-1].nuerons))
 
     #Multiset
     def getOverallError(self, trainingData):
@@ -219,6 +218,8 @@ class Nueron:
         # self.output = self.sigmoid(self.inputs.dot(self.weights))
         self.inputs = inputs
         output = 0
+
+
         for i in range(len(inputs)):
             output += inputs[i] * self.weights[i]
 
